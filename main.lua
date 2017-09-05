@@ -15,7 +15,8 @@ Player = {
 		PlayerSprite[2],
 		PlayerSprite[3],
 		PlayerSprite[2]
-	}
+	},
+	speed = 100
 }
 
 SpriteSpeed = 6
@@ -27,6 +28,13 @@ end
 -- dt is delta time, time since function last called. love.update is called every update. math goes here
 function love.update(dt)
 	if gameIsPaused then return end
+	
+	-- Movement left / right
+	if love.keyboard.isDown('d') then
+		Player.x = Player.x + (Player.speed * dt)
+	elseif love.keyboard.isDown('a') then
+		Player.x = Player.x - (Player.speed * dt)
+	end
 	
 	-- update frames
 	if ((Player.currentframe + (SpriteSpeed * dt)) < 4.5) then
