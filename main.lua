@@ -1,21 +1,43 @@
 gameIsPaused = false
 
-PlayerSprite = {
-	love.graphics.newImage("assets/Spaceship1.png"),
-	love.graphics.newImage("assets/Spaceship2.png"),
-	love.graphics.newImage("assets/Spaceship3.png")
+Spaceship = {
+	love.graphics.newImage("assets/Spaceship/Spaceship1.png"),
+	love.graphics.newImage("assets/Spaceship/Spaceship2.png"),
+	love.graphics.newImage("assets/Spaceship/Spaceship3.png"),
+	love.graphics.newImage("assets/Spaceship/Spaceship1Right.png"),
+	love.graphics.newImage("assets/Spaceship/Spaceship2Right.png"),
+	love.graphics.newImage("assets/Spaceship/Spaceship3Right.png"),
+	love.graphics.newImage("assets/Spaceship/Spaceship1Left.png"),
+	love.graphics.newImage("assets/Spaceship/Spaceship2Left.png"),
+	love.graphics.newImage("assets/Spaceship/Spaceship3Left.png")
+}
+
+PlayerSpriteNeutral = {
+	Spaceship[1],
+	Spaceship[2],
+	Spaceship[3],
+	Spaceship[2]
+}
+
+PlayerSpriteRight = {
+	Spaceship[4],
+	Spaceship[5],
+	Spaceship[6],
+	Spaceship[5]
+}
+
+PlayerSpriteLeft = {
+	Spaceship[7],
+	Spaceship[8],
+	Spaceship[9],
+	Spaceship[8]
 }
 
 Player = {
 	x = 0,
 	y = 0,
 	currentframe = 0.5,
-	Sprite = {
-		PlayerSprite[1],
-		PlayerSprite[2],
-		PlayerSprite[3],
-		PlayerSprite[2]
-	},
+	Sprite = PlayerSpriteNeutral,
 	speed = 100
 }
 
@@ -29,11 +51,15 @@ end
 function love.update(dt)
 	if gameIsPaused then return end
 	
+	Player.Sprite = PlayerSpriteNeutral
+	
 	-- Movement left / right
 	if love.keyboard.isDown('d') then
 		Player.x = Player.x + (Player.speed * dt)
+		Player.Sprite = PlayerSpriteRight
 	elseif love.keyboard.isDown('a') then
 		Player.x = Player.x - (Player.speed * dt)
+		Player.Sprite = PlayerSpriteLeft
 	end
 	
 	-- update frames
