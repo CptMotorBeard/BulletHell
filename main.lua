@@ -1,3 +1,5 @@
+require 'circle'
+
 gameIsPaused = false
 
 Spaceship = {
@@ -38,7 +40,8 @@ Player = {
 	y = 100,
 	currentframe = 0.5,
 	Sprite = PlayerSpriteNeutral,
-	speed = 200
+	speed = 200,
+	hitbox = Circle(0, 100, 5, 0, 230)
 }
 
 SpriteSpeed = 6
@@ -66,6 +69,9 @@ function love.update(dt)
 		end
 	end
 	
+	Player.hitbox.x = Player.x + (Player.Sprite[1]:getWidth()/2)
+	Player.hitbox.y = Player.y + (Player.Sprite[1]:getHeight()/2)
+		
 	-- update frames
 	if ((Player.currentframe + (SpriteSpeed * dt)) < 4.5) then
 		Player.currentframe = Player.currentframe + (SpriteSpeed * dt)
@@ -77,6 +83,7 @@ end
 -- love.draw is called every update. graphics go here
 function love.draw(dt)
 	love.graphics.draw(Player.Sprite[math.floor(Player.currentframe + 0.5)], Player.x, Player.y)
+	Player.hitbox:draw()
 end
 
 -- love.keypressed is called when a key is pressed likewise with keyreleased
