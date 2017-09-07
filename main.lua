@@ -35,10 +35,10 @@ PlayerSpriteLeft = {
 
 Player = {
 	x = 0,
-	y = 0,
+	y = 100,
 	currentframe = 0.5,
 	Sprite = PlayerSpriteNeutral,
-	speed = 100
+	speed = 200
 }
 
 SpriteSpeed = 6
@@ -55,11 +55,15 @@ function love.update(dt)
 	
 	-- Movement left / right
 	if love.keyboard.isDown('d') then
-		Player.x = Player.x + (Player.speed * dt)
-		Player.Sprite = PlayerSpriteRight
+		if not ((Player.x + (Player.speed * dt)) >= (love.graphics.getWidth() - Player.Sprite[1]:getWidth())) then
+			Player.x = Player.x + (Player.speed * dt)
+			Player.Sprite = PlayerSpriteRight
+		end
 	elseif love.keyboard.isDown('a') then
-		Player.x = Player.x - (Player.speed * dt)
-		Player.Sprite = PlayerSpriteLeft
+		if not ((Player.x - (Player.speed * dt)) <= 0) then
+			Player.x = Player.x - (Player.speed * dt)
+			Player.Sprite = PlayerSpriteLeft
+		end
 	end
 	
 	-- update frames
