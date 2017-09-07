@@ -2,6 +2,7 @@ require 'objects'
 
 gameIsPaused = false
 gameOver = false
+hitboxvisible = false
 
 Spaceship = {
 	love.graphics.newImage("assets/Spaceship/Spaceship1.png"),
@@ -37,14 +38,18 @@ PlayerSpriteLeft = {
 }
 
 Player = {
-	x = 0,
+	x = 250,
 	y = 500,
 	currentframe = 0.5,
 	Sprite = PlayerSpriteNeutral,
-	speed = 200,
-	hitbox = Circle(0, 100, 5, 0, 230)
+	speed = 250,
+	shootpoint = 0,
+	shooting = false,
+	hitbox = Circle(0, 100, 5, 0, 230),
+	Bullets = {}
 }
 
+Enemies = {}
 Bullets = {}
 
 SpriteSpeed = 6
@@ -56,8 +61,26 @@ end
 -- dt is delta time, time since function last called. love.update is called every update. math goes here
 function love.update(dt)
 	if gameIsPaused then return end
-		
+	
 	Player.Sprite = PlayerSpriteNeutral
+	
+	-- Bullets
+	if love.keyboard.isDown('space') then
+		if not Player.shooting then
+			table.insert(Player.Bullets, Circle(Player.shootpoint, Player.y, 3))
+			Player.shooting = true
+		else
+			Player.shooting = false
+		end
+	end
+	
+	-- Update player bullets
+	for index, bullet in ipairs(Player.Bullets) do
+		bullet.y = bullet.y - (300 * dt)
+		if bullet.y <= 0 then
+			table.remove(Player.Bullets, index)
+		end
+	end
 	
 	-- Movement left / right
 	if love.keyboard.isDown('d') then
@@ -74,6 +97,8 @@ function love.update(dt)
 	
 	Player.hitbox.x = Player.x + (Player.Sprite[1]:getWidth()/2)
 	Player.hitbox.y = Player.y + (Player.Sprite[1]:getHeight()/2)
+	
+	Player.shootpoint = Player.x + (Player.Sprite[1]:getWidth()/2)
 	
 	-- Detect collisions
 	for index, bullet in ipairs(Bullets) do
@@ -92,9 +117,14 @@ function love.update(dt)
 end
 
 -- love.draw is called every update. graphics go here
-function love.draw(dt)
+function love.draw()
 	love.graphics.draw(Player.Sprite[math.floor(Player.currentframe + 0.5)], Player.x, Player.y)
-	Player.hitbox:draw()
+	
+	if hitboxvisible then Player.hitbox:draw() end
+	
+	for index, bullet in ipairs(Player.Bullets) do
+		bullet:draw()
+	end
 	
 	for index, bullet in ipairs(Bullets) do
 		bullet:draw()
@@ -103,9 +133,17 @@ end
 
 -- love.keypressed is called when a key is pressed likewise with keyreleased
 function love.keypressed(key)
+	if key == 'lshift' then
+		hitboxvisible = true
+		Player.speed = 125
+	end
 end
 
 function love.keyreleased(key)
+	if key == 'lshift' then
+		hitboxvisible = false
+		Player.speed = 250
+	end
 end
 
 -- love.focus tells the game if the screen is in focus
