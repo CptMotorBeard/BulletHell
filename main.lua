@@ -1,8 +1,15 @@
 require 'objects'
 
+require 'game'
+
 gameIsPaused = false
 gameOver = false
 hitboxvisible = false
+
+StartDelay = 0.5
+
+MainMenu = {items = {'Start', 'Exit'}, selected = 1}
+GameMode = 'MainMenu'
 
 Spaceship = {
 	love.graphics.newImage("assets/Spaceship/Spaceship1.png"),
@@ -62,87 +69,133 @@ end
 function love.update(dt)
 	if gameIsPaused then return end
 	
-	Player.Sprite = PlayerSpriteNeutral
-	
-	-- Bullets
-	if love.keyboard.isDown('space') then
-		if not Player.shooting then
-			table.insert(Player.Bullets, Circle(Player.shootpoint, Player.y, 3))
-			Player.shooting = true
+	if GameMode == 'MainMenu' then
+	elseif GameMode == 'StartDelay' then
+		StartDelay = StartDelay - dt
+		if StartDelay <= 0 then
+			StartDelay = 0.5
+			GameMode = 'Play'
+		end
+	elseif GameMode == 'Play' then
+		Player.Sprite = PlayerSpriteNeutral
+
+		-- Bullets
+		if love.keyboard.isDown('space') then
+			if not Player.shooting then
+				table.insert(Player.Bullets, Circle(Player.shootpoint, Player.y, 3))
+				Player.shooting = true
+			else
+				Player.shooting = false
+			end
+		end
+
+		-- Update player bullets
+		for index, bullet in ipairs(Player.Bullets) do
+			bullet.y = bullet.y - (300 * dt)
+			if bullet.y <= 0 then
+				table.remove(Player.Bullets, index)
+			end
+		end
+
+		-- Movement left / right
+		if love.keyboard.isDown('d') then
+			if not ((Player.x + (Player.speed * dt)) >= (love.graphics.getWidth() - Player.Sprite[1]:getWidth())) then
+				Player.x = Player.x + (Player.speed * dt)
+				Player.Sprite = PlayerSpriteRight
+			end
+		elseif love.keyboard.isDown('a') then
+			if not ((Player.x - (Player.speed * dt)) <= 0) then
+				Player.x = Player.x - (Player.speed * dt)
+				Player.Sprite = PlayerSpriteLeft
+			end
+		end
+
+		Player.hitbox.x = Player.x + (Player.Sprite[1]:getWidth()/2)
+		Player.hitbox.y = Player.y + (Player.Sprite[1]:getHeight()/2)
+
+		Player.shootpoint = Player.x + (Player.Sprite[1]:getWidth()/2)
+
+		-- Detect collisions
+		for _, bullet in ipairs(Bullets) do
+			if Player.hitbox:checkCollision(bullet) then
+				gameOver = true
+				break
+			end
+		end
+
+		-- update frames
+		if ((Player.currentframe + (SpriteSpeed * dt)) < 4.5) then
+			Player.currentframe = Player.currentframe + (SpriteSpeed * dt)
 		else
-			Player.shooting = false
+			Player.currentframe = 0.5
 		end
-	end
-	
-	-- Update player bullets
-	for index, bullet in ipairs(Player.Bullets) do
-		bullet.y = bullet.y - (300 * dt)
-		if bullet.y <= 0 then
-			table.remove(Player.Bullets, index)
-		end
-	end
-	
-	-- Movement left / right
-	if love.keyboard.isDown('d') then
-		if not ((Player.x + (Player.speed * dt)) >= (love.graphics.getWidth() - Player.Sprite[1]:getWidth())) then
-			Player.x = Player.x + (Player.speed * dt)
-			Player.Sprite = PlayerSpriteRight
-		end
-	elseif love.keyboard.isDown('a') then
-		if not ((Player.x - (Player.speed * dt)) <= 0) then
-			Player.x = Player.x - (Player.speed * dt)
-			Player.Sprite = PlayerSpriteLeft
-		end
-	end
-	
-	Player.hitbox.x = Player.x + (Player.Sprite[1]:getWidth()/2)
-	Player.hitbox.y = Player.y + (Player.Sprite[1]:getHeight()/2)
-	
-	Player.shootpoint = Player.x + (Player.Sprite[1]:getWidth()/2)
-	
-	-- Detect collisions
-	for index, bullet in ipairs(Bullets) do
-		if Player.hitbox:checkCollision(bullet) then
-			gameOver = true
-			break
-		end
-	end
-	
-	-- update frames
-	if ((Player.currentframe + (SpriteSpeed * dt)) < 4.5) then
-		Player.currentframe = Player.currentframe + (SpriteSpeed * dt)
-	else
-		Player.currentframe = 0.5
 	end
 end
 
 -- love.draw is called every update. graphics go here
 function love.draw()
-	love.graphics.draw(Player.Sprite[math.floor(Player.currentframe + 0.5)], Player.x, Player.y)
-	
-	if hitboxvisible then Player.hitbox:draw() end
-	
-	for index, bullet in ipairs(Player.Bullets) do
-		bullet:draw()
-	end
-	
-	for index, bullet in ipairs(Bullets) do
-		bullet:draw()
+	if GameMode == 'MainMenu' then
+		love.graphics.push('all')
+		love.graphics.setFont(love.graphics.newFont(72))
+		love.graphics.setColor(115, 30, 30)
+		love.graphics.printf("THIS IS A GAME", 0, 50, love.graphics.getWidth(), 'center')
+		love.graphics.setFont(love.graphics.newFont(24))
+		for index, item in ipairs(MainMenu.items) do
+
+			if index == MainMenu.selected then
+				love.graphics.setColor(30, 115, 30)
+				love.graphics.printf(item, 0, 350 + (index * 24), love.graphics.getWidth(), 'center')
+			else
+				love.graphics.setColor(30, 30, 115)
+				love.graphics.printf(item, 0, 350 + (index * 24), love.graphics.getWidth(), 'center')
+			end
+		end
+		love.graphics.pop()
+	elseif GameMode == 'Play' or GameMode == 'StartDelay' then
+		love.graphics.printf(love.timer.getFPS(), 10, 10, love.graphics.getWidth(), 'left')
+		love.graphics.draw(Player.Sprite[math.floor(Player.currentframe + 0.5)], Player.x, Player.y)
+		
+		if hitboxvisible then Player.hitbox:draw() end
+		
+		for _, bullet in ipairs(Player.Bullets) do
+			bullet:draw()
+		end
+		
+		for _, bullet in ipairs(Bullets) do
+			bullet:draw()
+		end
 	end
 end
 
 -- love.keypressed is called when a key is pressed likewise with keyreleased
 function love.keypressed(key)
-	if key == 'lshift' then
-		hitboxvisible = true
-		Player.speed = 125
+	if GameMode == 'MainMenu' then
+		if key == 'w' then
+			if not (MainMenu.selected == 1) then MainMenu.selected = MainMenu.selected - 1 end
+		elseif key == 's' then
+			if not (MainMenu.selected == table.getn(MainMenu.items)) then MainMenu.selected = MainMenu.selected + 1 end
+		elseif key == 'space' then
+			if MainMenu.selected == 1 then
+				GameMode = 'StartDelay'
+			elseif MainMenu.selected == 2 then
+				love.event.quit()
+			end
+		end
+	elseif GameMode == 'Play' then
+		if key == 'lshift' then
+			hitboxvisible = true
+			Player.speed = 125
+		end
 	end
 end
 
 function love.keyreleased(key)
-	if key == 'lshift' then
-		hitboxvisible = false
-		Player.speed = 250
+	if GameMode == 'MainMenu' then
+	elseif GameMode == 'Play' then
+		if key == 'lshift' then
+			hitboxvisible = false
+			Player.speed = 250
+		end
 	end
 end
 
