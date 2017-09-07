@@ -29,3 +29,5 @@ function Circle:draw()
 	
 	love.graphics.pop()
 end
+
+--[[END OF CIRCLE]]--

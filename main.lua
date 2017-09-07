@@ -1,6 +1,7 @@
-require 'circle'
+require 'objects'
 
 gameIsPaused = false
+gameOver = false
 
 Spaceship = {
 	love.graphics.newImage("assets/Spaceship/Spaceship1.png"),
@@ -37,12 +38,14 @@ PlayerSpriteLeft = {
 
 Player = {
 	x = 0,
-	y = 100,
+	y = 500,
 	currentframe = 0.5,
 	Sprite = PlayerSpriteNeutral,
 	speed = 200,
 	hitbox = Circle(0, 100, 5, 0, 230)
 }
+
+Bullets = {}
 
 SpriteSpeed = 6
 
@@ -53,7 +56,7 @@ end
 -- dt is delta time, time since function last called. love.update is called every update. math goes here
 function love.update(dt)
 	if gameIsPaused then return end
-	
+		
 	Player.Sprite = PlayerSpriteNeutral
 	
 	-- Movement left / right
@@ -71,7 +74,15 @@ function love.update(dt)
 	
 	Player.hitbox.x = Player.x + (Player.Sprite[1]:getWidth()/2)
 	Player.hitbox.y = Player.y + (Player.Sprite[1]:getHeight()/2)
-		
+	
+	-- Detect collisions
+	for index, bullet in ipairs(Bullets) do
+		if Player.hitbox:checkCollision(bullet) then
+			gameOver = true
+			break
+		end
+	end
+	
 	-- update frames
 	if ((Player.currentframe + (SpriteSpeed * dt)) < 4.5) then
 		Player.currentframe = Player.currentframe + (SpriteSpeed * dt)
@@ -84,6 +95,10 @@ end
 function love.draw(dt)
 	love.graphics.draw(Player.Sprite[math.floor(Player.currentframe + 0.5)], Player.x, Player.y)
 	Player.hitbox:draw()
+	
+	for index, bullet in ipairs(Bullets) do
+		bullet:draw()
+	end
 end
 
 -- love.keypressed is called when a key is pressed likewise with keyreleased
