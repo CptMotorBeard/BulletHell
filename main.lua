@@ -1,6 +1,7 @@
 require 'objects'
-
 require 'game'
+
+game = Game()
 
 gameIsPaused = false
 gameOver = false
@@ -56,9 +57,6 @@ Player = {
 	Bullets = {}
 }
 
-Enemies = {}
-Bullets = {}
-
 SpriteSpeed = 6
 
 -- love.load is called once at the beginning
@@ -77,6 +75,11 @@ function love.update(dt)
 			GameMode = 'Play'
 		end
 	elseif GameMode == 'Play' then
+		
+		if game:spawnEnemies() == 'win' then
+			GameMode = 'Win'
+		end
+
 		Player.Sprite = PlayerSpriteNeutral
 
 		-- Bullets
@@ -115,14 +118,21 @@ function love.update(dt)
 
 		Player.shootpoint = Player.x + (Player.Sprite[1]:getWidth()/2)
 
-		-- Detect collisions
-		for _, bullet in ipairs(Bullets) do
-			if Player.hitbox:checkCollision(bullet) then
-				gameOver = true
-				break
+		-- Check Collisions
+		if table.getn(Player.Bullets) > 0 and game.enemies then
+			for index, enemy in ipairs(game.enemies) do
+				for _, bullet in ipairs(Player.Bullets) do
+					if table.getn(game.enemies) <= 0 then
+						break
+					end
+					if (enemy:checkCollision(bullet)) then
+						game:enemyHit(index)
+						break
+					end
+				end
 			end
 		end
-
+		
 		-- update frames
 		if ((Player.currentframe + (SpriteSpeed * dt)) < 4.5) then
 			Player.currentframe = Player.currentframe + (SpriteSpeed * dt)
@@ -151,6 +161,12 @@ function love.draw()
 			end
 		end
 		love.graphics.pop()
+	elseif GameMode == 'Win' then
+		love.graphics.push('all')
+		love.graphics.setFont(love.graphics.newFont(72))
+		love.graphics.setColor(115, 30, 30)
+		love.graphics.printf("WINNER", 0, 200, love.graphics.getWidth(), 'center')
+		love.graphics.pop()
 	elseif GameMode == 'Play' or GameMode == 'StartDelay' then
 		love.graphics.printf(love.timer.getFPS(), 10, 10, love.graphics.getWidth(), 'left')
 		love.graphics.draw(Player.Sprite[math.floor(Player.currentframe + 0.5)], Player.x, Player.y)
@@ -161,7 +177,13 @@ function love.draw()
 			bullet:draw()
 		end
 		
-		for _, bullet in ipairs(Bullets) do
+		if game.enemies then
+			for _, enemy in ipairs(game.enemies) do
+				enemy:draw()
+			end
+		end
+	
+		for _, bullet in ipairs(game.bullets) do
 			bullet:draw()
 		end
 	end
