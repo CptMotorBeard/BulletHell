@@ -112,6 +112,17 @@ function love.update(dt)
 				Player.Sprite = PlayerSpriteLeft
 			end
 		end
+		
+		-- Movement up / down
+		if love.keyboard.isDown('w') then
+			if not ((Player.y - (Player.speed * dt)) <= 0) then
+				Player.y = Player.y - (Player.speed * dt)
+			end
+		elseif love.keyboard.isDown('s') then
+			if not ((Player.y + (Player.speed * dt)) >= (love.graphics.getHeight() - Player.Sprite[1]:getHeight())) then
+				Player.y = Player.y + (Player.speed * dt)
+			end
+		end
 
 		Player.hitbox.x = Player.x + (Player.Sprite[1]:getWidth()/2)
 		Player.hitbox.y = Player.y + (Player.Sprite[1]:getHeight()/2)

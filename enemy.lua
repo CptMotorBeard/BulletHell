@@ -4,10 +4,10 @@ require 'objects'
 Enemy = {}
 Enemy.__index = Enemy
 
-function Enemy.new(enemytype)
+function Enemy.new(enemytype, x, y, radius)
 	local enemytype = enemytype or 1
 	local pattern = Patterns[enemytype]
-	local body = Circle(pattern.startx, pattern.starty, pattern.r)
+	local body = Circle(x, y, radius)
 	
 	return setmetatable({
 		enemytype = enemytype,

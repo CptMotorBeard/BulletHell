@@ -6,7 +6,7 @@ Levels =
 		numRounds = 1,
 		Enemies =
 		{
-			{Enemy(1), Enemy(2)}
+			{Enemy(1, 100, 100, 10), Enemy(2, 200, 100, 10)}
 		}
 	}
 }
