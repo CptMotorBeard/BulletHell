@@ -1,6 +1,7 @@
 require 'objects'
 require 'game'
 
+-- We have our game modes and game states
 game = Game()
 
 gameIsPaused = false
@@ -12,6 +13,11 @@ StartDelay = 0.5
 MainMenu = {items = {'Start', 'Exit'}, selected = 1}
 GameMode = 'MainMenu'
 
+-- Than we have our character sprites
+--[[
+		TODO:
+		Make a player class
+]]--
 Spaceship = {
 	love.graphics.newImage("assets/Spaceship/Spaceship1.png"),
 	love.graphics.newImage("assets/Spaceship/Spaceship2.png"),
@@ -57,6 +63,7 @@ Player = {
 	Bullets = {}
 }
 
+-- Variable to slow down the bullets
 SpriteSpeed = 6
 
 -- love.load is called once at the beginning
@@ -76,6 +83,13 @@ function love.update(dt)
 		end
 	elseif GameMode == 'Play' then
 		
+		--[[
+				TODO:
+				GameMode = game:spawnEnemies()
+				
+				Change 'win' to 'Win' and set up a gamemode for in between enemy stages and levels
+				Maybe if GameMode == number then countdown before continue to play or something
+		]]--
 		if game:spawnEnemies() == 'win' then
 			GameMode = 'Win'
 		end
@@ -124,6 +138,7 @@ function love.update(dt)
 			end
 		end
 
+		-- Set hitbox and bullet entry location to spots on the player sprite
 		Player.hitbox.x = Player.x + (Player.Sprite[1]:getWidth()/2)
 		Player.hitbox.y = Player.y + (Player.Sprite[1]:getHeight()/2)
 
@@ -137,6 +152,10 @@ function love.update(dt)
 						break
 					end
 					if (enemy:checkCollision(bullet)) then
+						--[[
+								TODO:
+								Add a scoring system
+						]]--
 						game:enemyHit(index)
 						break
 					end
@@ -144,7 +163,7 @@ function love.update(dt)
 			end
 		end
 		
-		-- update frames
+		-- update frames for player sprite
 		if ((Player.currentframe + (SpriteSpeed * dt)) < 4.5) then
 			Player.currentframe = Player.currentframe + (SpriteSpeed * dt)
 		else
@@ -162,7 +181,7 @@ function love.draw()
 		love.graphics.printf("THIS IS A GAME", 0, 50, love.graphics.getWidth(), 'center')
 		love.graphics.setFont(love.graphics.newFont(24))
 		for index, item in ipairs(MainMenu.items) do
-
+		-- Main menu options
 			if index == MainMenu.selected then
 				love.graphics.setColor(30, 115, 30)
 				love.graphics.printf(item, 0, 350 + (index * 24), love.graphics.getWidth(), 'center')
@@ -173,12 +192,14 @@ function love.draw()
 		end
 		love.graphics.pop()
 	elseif GameMode == 'Win' then
+		-- Simple victory screen
 		love.graphics.push('all')
 		love.graphics.setFont(love.graphics.newFont(72))
 		love.graphics.setColor(115, 30, 30)
 		love.graphics.printf("WINNER", 0, 200, love.graphics.getWidth(), 'center')
 		love.graphics.pop()
 	elseif GameMode == 'Play' or GameMode == 'StartDelay' then
+	-- Draw all the sprites, bullets and hitboxes
 		love.graphics.printf(love.timer.getFPS(), 10, 10, love.graphics.getWidth(), 'left')
 		love.graphics.draw(Player.Sprite[math.floor(Player.currentframe + 0.5)], Player.x, Player.y)
 		
@@ -214,6 +235,8 @@ function love.keypressed(key)
 				love.event.quit()
 			end
 		end
+		
+	-- Toggle for speed and showing player hitbox
 	elseif GameMode == 'Play' then
 		if key == 'lshift' then
 			hitboxvisible = true
@@ -224,6 +247,8 @@ end
 
 function love.keyreleased(key)
 	if GameMode == 'MainMenu' then
+	
+	-- Toggle for speed and showing player hitbox
 	elseif GameMode == 'Play' then
 		if key == 'lshift' then
 			hitboxvisible = false
@@ -233,6 +258,7 @@ function love.keyreleased(key)
 end
 
 -- love.focus tells the game if the screen is in focus
+-- pause game if not focused
 function love.focus(f) gameIsPaused = not f end
 
 -- love.quit is called when the user clicks the close button

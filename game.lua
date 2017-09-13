@@ -1,7 +1,29 @@
 require 'enemy'
 
+--[[
+	Levels is split up into each stage
+	Each stage has several parts, which is defined by the enemies in those parts
+	We define the number of rounds for each stage, after all rounds are done, we move into the next stage
+	
+	Levels =
+	{
+		-- Level 1
+		{
+			numRounds, = -- However many rounds there are inside of Enemies
+			Enemies =
+			{
+				-- Each item inside of this list is a new round. Fill with a list of new Enemy objects
+			}
+		}
+		-- Level 2
+		{} -- Fill similiarily
+		-- Level 3 and so on
+	}
+]]--
+
 Levels = 
 {
+	-- Level 1
 	{
 		numRounds = 1,
 		Enemies =
@@ -26,6 +48,15 @@ function Game.new(level)
 end
 
 setmetatable(Game, {__call = function(_, ...) return Game.new(...) end})
+
+--[[
+		To spawn enemies we look at the Levels table
+		For each level, we spawn in the enemies for each round. When they are all removed, we move to the next level
+		If all enemies on the last level are removed, we move on to the win screen
+		
+		TODO:
+		Put a delay between levels
+]]--
 
 function Game:spawnEnemies()
 	if (not self.enemies) or table.getn(self.enemies) == 0 then
