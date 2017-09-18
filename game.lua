@@ -21,6 +21,8 @@ require 'enemy'
 	}
 ]]--
 
+-- Enemy(type, x, y, radius)
+
 Levels = 
 {
 	-- Level 1
@@ -28,7 +30,7 @@ Levels =
 		numRounds = 1,
 		Enemies =
 		{
-			{Enemy(1, 100, 100, 10), Enemy(2, 200, 100, 10)}
+			{Enemy(1, 100, 100, 10), Enemy(1, 200, 100, 10)}
 		}
 	}
 }
@@ -58,23 +60,34 @@ setmetatable(Game, {__call = function(_, ...) return Game.new(...) end})
 		Put a delay between levels
 ]]--
 
-function Game:spawnEnemies()
-	if (not self.enemies) or table.getn(self.enemies) == 0 then
-		if self.level > table.getn(Levels) then
+function Game:Play(dt)
+	if (not self.enemies) or #self.enemies == 0 then
+		if self.level > #(Levels) then
 			return 'win'
 		end
 		local curLevel = Levels[self.level]
 		if self.curSection > curLevel.numRounds then
 			self.level = self.level + 1
-			if self.level > table.getn(Levels) then
-				return 'win'
+			if self.level > #(Levels) then
+				return 'Win'
 			end
 			self.curSection = 0
 			curLevel = Levels[level]			
 		end
 		self.curSection = self.curSection + 1
 		self.enemies = curLevel.Enemies[self.curSection]
+	else
+		for index, enemy in ipairs(self.enemies) do
+			enemy:move(dt)
+			if 	enemy.body.x < (0 - enemy.body.radius) or
+				enemy.body.x > (love.graphics.getWidth() + enemy.body.radius) or
+				enemy.body.y < (0 - enemy.body.radius) or
+				enemy.body.y > (love.graphics.getHeight() + enemy.body.radius) then
+				table.remove(self.enemies, index)
+			end
+		end
 	end
+	return 'Play'
 end
 
 function Game:enemyHit(index)

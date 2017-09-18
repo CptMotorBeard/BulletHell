@@ -85,14 +85,9 @@ function love.update(dt)
 		
 		--[[
 				TODO:
-				GameMode = game:spawnEnemies()
-				
-				Change 'win' to 'Win' and set up a gamemode for in between enemy stages and levels
 				Maybe if GameMode == number then countdown before continue to play or something
 		]]--
-		if game:spawnEnemies() == 'win' then
-			GameMode = 'Win'
-		end
+		GameMode = game:Play(dt)
 
 		Player.Sprite = PlayerSpriteNeutral
 
@@ -145,10 +140,10 @@ function love.update(dt)
 		Player.shootpoint = Player.x + (Player.Sprite[1]:getWidth()/2)
 
 		-- Check Collisions
-		if table.getn(Player.Bullets) > 0 and game.enemies then
+		if #(Player.Bullets) > 0 and game.enemies then
 			for index, enemy in ipairs(game.enemies) do
 				for _, bullet in ipairs(Player.Bullets) do
-					if table.getn(game.enemies) <= 0 then
+					if #(game.enemies) <= 0 then
 						break
 					end
 					if (enemy:checkCollision(bullet)) then
@@ -227,7 +222,7 @@ function love.keypressed(key)
 		if key == 'w' then
 			if not (MainMenu.selected == 1) then MainMenu.selected = MainMenu.selected - 1 end
 		elseif key == 's' then
-			if not (MainMenu.selected == table.getn(MainMenu.items)) then MainMenu.selected = MainMenu.selected + 1 end
+			if not (MainMenu.selected == #(MainMenu.items)) then MainMenu.selected = MainMenu.selected + 1 end
 		elseif key == 'space' then
 			if MainMenu.selected == 1 then
 				GameMode = 'StartDelay'

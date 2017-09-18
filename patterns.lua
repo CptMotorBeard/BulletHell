@@ -1,7 +1,6 @@
 --[[
 	Movement Patters define how an enemy moves, it can be broken down into a FNS
 	
-	x, y are the x and y movements. 0 for none and +/- 1 for positive and negative movement
 	speed is how fast the enemy moves, pass and multiply by dt for proper movement
 	That is how the enemy moves
 	
@@ -17,30 +16,26 @@
 	example of movement pattern
 	
 	Step 1
-	{
-		x = 1,					-- This will make the enemy only move positively on the x axis at a speed of 100
-		y = 0,			
+	{			
 		speed = 100,		
 		xcondition =
 		{
 			position = 100,		-- The condition will be true once the enemy moves 100 pixels to the right
-			'px',
-			'relative'		
+			typ = 'relative',
+			val = 'px'
 		},
 		ycondition = nil,		-- There is no y movement so no y condition needs to be passed
 		nextstep = 2			-- After either condition is met, move to step 2
 	}
 	Step 2
 	{
-		x = 0,					-- This time the enemy will move positively on the y axis
-		y = 1,
 		speed = 100,
 		xcondition = nil,		-- There is no x condition since there is no x movement
 		ycondition =
 		{
 			position = 10,		-- Now we move 10 units down
-			'units',
-			'relative'
+			typ = 'relative',
+			val = 'units'
 		},
 		nextstep = 1			-- loop back to step 1
 	}
@@ -51,11 +46,29 @@
 Patterns =
 {
 	{
-		movement = {},
-		bullets = {}
-	},
-	{
-		movement = {},
-		bullets = {}
+		-- Step 1
+		{
+			speed = 200,
+			xcondition =
+			{
+				position = 100,
+				typ = 'relative',
+				val = 'px'
+			},
+			ycondition = nil,
+			nextstep = 2
+		},
+		-- Step 2
+		{
+			speed = 200,
+			xcondition = nil,
+			ycondition = 
+			{
+				position = 100,
+				typ = 'relative',
+				val = 'px'
+			},
+			nextstep = 1
+		}
 	}
 }
