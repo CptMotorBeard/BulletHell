@@ -12,7 +12,11 @@ function Enemy.new(enemytype, x, y, radius, points, bulletPattern)
 	local enemytype = enemytype or 1
 	local pattern = MovementPatterns[enemytype]
 	local points = points or 10
-	local bulletPattern = bulletPattern or {typ = 'circle', numofbullets = 8, shot = {frequency = 1, move=1}, size = 3}
+	local bulletPattern = {	typ = 'circle' or bulletPattern.typ,
+							numofbullets = 8 or bulletPattern.numofbullets,
+							shot = {	frequency = 1 or bulletPattern.shot.frequency,
+										move=1 or bulletPattern.shot.move}, 
+							size = 3 or bulletPattern.size}
 	-- Body is the hitbox, still need proper sprites (see TODO below)
 	local body = Circle(x, y, radius)
 	
