@@ -6,16 +6,40 @@ __UNITS = 64
 Enemy = {}
 Enemy.__index = Enemy
 
-function Enemy.new(enemytype, x, y, radius, points)
+--[[
+	Bullet pattern types --
+		Directional --
+			Aimed --
+				number of bullets
+			direction
+			number of bullets
+		Circle --
+			number of bullets
+			Circle [move] --
+				direction
+		Line --
+			number of bullets
+			direction
+		Sweep --
+			number of bullets
+			direction
+			sweep direction
+	Duplicate all of these with tracking bullets
+	Tracking bullets do a burst and than aim towards the player
+]]--
+
+function Enemy.new(enemytype, x, y, radius, points, bulletPattern)
 	local enemytype = enemytype or 1
 	local pattern = MovementPatterns[enemytype]
 	local points = points or 10
+	local bulletPattern = bulletPattern or {typ = 'direction', direction = 180, numofbullets = 1, frequency = 1}
 	-- Body is the hitbox, still need proper sprites (see TODO below)
 	local body = Circle(x, y, radius)
 	
 	return setmetatable({
 		enemytype = enemytype,
 		pattern = pattern,
+		bulletPattern = bulletPattern,
 		body = body,
 		patstep = 0,
 		xmov = nil,
@@ -115,4 +139,8 @@ function Enemy:move(dt)
 	local ydir = (self.ymov - self.body.y)
 	ydir = (ydir > 0 and 1) or (ydir < 0 and -1) or 0
 	self.body.y = self.body.y + (ydir * move)
+end
+
+function Enemy:shoot(dt)
+
 end

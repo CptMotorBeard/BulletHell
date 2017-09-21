@@ -21,7 +21,49 @@ require 'enemy'
 	}
 ]]--
 
--- Enemy(type, x, y, radius, points)
+-- Enemy(type, x, y, radius, points, bulletPattern)
+
+--[[
+	bulletPattern format
+	{typ=, direction=, numofbullets=, frequency=}
+	
+	typ can equal one of the following
+	the information followed in the [] indicates how to fill out the rest of the data
+	----
+		'direction'
+		[
+			direction = 0 - 360 (value in degrees)
+			OR
+			direction = 'aimed' (in which case the direction will be towards the player)
+			
+			numofbullets is a positive integer
+		]
+		'circle' [
+			direction =
+			{
+				delay1 is a positive integer (indicates how long before the bullets stop moving)
+				delay2 is a positive integer (indicates how long before the bullets start moving again in the direction)
+				direction = -1 - 360 (-1 means the bullets travel straight inwards, positive means they all travel in a specific direction)
+			}
+			OR don't supply for bullets to travel straight until they are off screen
+			numofbullets is a positive integer
+		]
+		'line' [
+			direction = 0 - 360 (direction in degrees)
+			numofbullets is a positive integer
+		]
+		'sweep' [
+			direction =
+			{
+				start	= 0 - 360 (where the bullets are aimed)
+				end		= 0 - 360 (where the bullets sweep to)
+			}
+		]
+	----
+	frequency is a positive integer indicating how often to shoot
+	
+	bulletPattern default = {typ = 'direction', direction = 180, numofbullets = 1, frequency = 1}
+]]--
 
 Levels = 
 {
