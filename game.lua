@@ -47,10 +47,11 @@ function Game:Play(dt)
 				local bullet = enemy:shoot(dt)
 				table.insert(self.bullets, bullet)
 			end
-			if 	enemy.body.x < (0 - enemy.body.radius) or
+			if 	enemy.patstep == -1 and 
+				(enemy.body.x < (0 - enemy.body.radius) or
 				enemy.body.x > (love.graphics.getWidth() + enemy.body.radius) or
 				enemy.body.y < (0 - enemy.body.radius) or
-				enemy.body.y > (love.graphics.getHeight() + enemy.body.radius) then
+				enemy.body.y > (love.graphics.getHeight() + enemy.body.radius)) then
 				table.remove(self.enemies, index)
 			end
 		end
@@ -67,8 +68,8 @@ function bulletHelper(dt, pattern, bullets)
 	local numBullets = pattern.numofbullets
 	local direction = pattern.direction
 
-	for index, bullet in ipairs(bullets) do
-		local curbullet = (index - 1) % numBullets
+	for _, bullet in ipairs(bullets) do
+		local curbullet = (bullet.index - 1) % numBullets
 		if bulletType == 'direction' then
 			local angle = (curbullet * (90 / (numBullets - 1))) - 135
 			local xmovement = math.cos(math.rad(direction + angle))
@@ -84,11 +85,15 @@ function bulletHelper(dt, pattern, bullets)
 			bullet.x = bullet.x + (dt * 100 * xmovement)
 			bullet.y = bullet.y + (dt * 100 * ymovement)
 		end
-		
-		if 	bullet.x < (0 - pattern.size) or
-			bullet.x > (love.graphics.getWidth() + pattern.size) or
-			bullet.y < (0 - pattern.size) or
-			bullet.y > (love.graphics.getHeight() + pattern.size) then
+	end
+end
+
+function cleanupBullets(bullets)
+	for index, bullet in ipairs(bullets) do
+		if 	bullet.x <= (0) or
+			bullet.x >= (love.graphics.getWidth()) or
+			bullet.y <= (0) or
+			bullet.y >= (love.graphics.getHeight()) then
 			table.remove(bullets, index)
 		end
 	end
@@ -97,6 +102,7 @@ end
 function Game:updateBullets(dt)
 	for index, enemy in ipairs(self.bullets) do
 		bulletHelper(dt, enemy.pattern, enemy.bullets)
+		cleanupBullets(enemy.bullets)
 		if #enemy.bullets <= 0 then table.remove(self.bullets, index) end
 	end
 end

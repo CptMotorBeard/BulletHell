@@ -15,7 +15,7 @@ function love.conf(t)
 	t.window.display = 1
 	
 	-- Debug purposes only
-	t.console = false
+	t.console = true
 
 	-- Modules
 	t.modules.audio = false				-- Enable the audio module (boolean)

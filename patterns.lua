@@ -45,5 +45,43 @@
 
 MovementPatterns =
 {
-
+	-- Pattern 1
+	{
+		{
+			speed = 100,
+			xcondition =
+			{
+				position = love.graphics.getWidth() - 100,
+				typ = 'relative',
+				val = 'px'
+			},
+			nextstep = -1
+		}
+	},
+	-- Pattern 2
+	{
+		{
+			speed = 100,
+			xcondition =
+			{
+				position = -love.graphics.getWidth() + 100,
+				typ = 'relative',
+				val = 'px'
+			},
+			nextstep = -1
+		}
+	},
+	-- Pattern 3
+	{
+		{
+			speed = 100,
+			ycondition =
+			{
+				position = love.graphics.getHeight() / 2,
+				typ = 'absolute',
+				val = px
+			},
+			nextstep = -1
+		}
+	}
 }

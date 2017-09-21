@@ -44,10 +44,19 @@
 		}
 	size = radius of bullet hitbox
 	
-	bulletPattern default = {typ = 'circle', numofbullets = 8, shot={frequency = 1}, size = 3}
+	bulletPattern default = {typ = 'circle', numofbullets = 8, shot={frequency = 1, move=1}, size = 3}
 ]]--
 
 Levels = 
 {
-
+	-- Level 1
+	{
+		numRounds = 1,
+		Enemies =
+		{
+			{
+				Enemy(3, love.graphics.getWidth() / 2, -50, 10, 100, {typ='circle', numofbullets=12, shot={frequency=1}})
+			}
+		}
+	}
 }
