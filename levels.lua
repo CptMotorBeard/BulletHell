@@ -7,6 +7,7 @@
 	{
 		-- Level 1
 		{
+			delay = Delay before the next level starts (defaults to 0.5)
 			numRounds, = -- However many rounds there are inside of Enemies
 			Enemies =
 			{
@@ -48,22 +49,5 @@
 
 Levels = 
 {
-	-- Level 1
-	{
-		numRounds = 2,
-		Enemies =
-		{
-			{Enemy(1, 100, 100, 10)},
-			{Enemy(1, 100, 100, 10)}
-		}
-	},
-	-- Level 2
-	{
-		numRounds = 2,
-		Enemies =
-		{
-			{Enemy(1, 100, 100, 10)},
-			{Enemy(1, 100, 100, 10)}
-		}
-	}
+
 }

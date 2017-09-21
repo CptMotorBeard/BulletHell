@@ -45,30 +45,5 @@
 
 MovementPatterns =
 {
-	{
-		-- Step 1
-		{
-			speed = 200,
-			xcondition =
-			{
-				position = 100,
-				typ = 'relative',
-				val = 'px'
-			},
-			ycondition = nil,
-			nextstep = 2
-		},
-		-- Step 2
-		{
-			speed = 200,
-			xcondition = nil,
-			ycondition = 
-			{
-				position = 100,
-				typ = 'relative',
-				val = 'px'
-			},
-			nextstep = 1
-		}
-	}
+
 }
