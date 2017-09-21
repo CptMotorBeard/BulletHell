@@ -9,8 +9,6 @@ gameIsPaused = false
 gameOver = false
 hitboxvisible = false
 
-StartDelay = 0.5
-
 MainMenu = {items = {'Start', 'Exit'}, selected = 1}
 GameMode = 'MainMenu'
 
@@ -75,19 +73,16 @@ end
 function love.update(dt)
 	if gameIsPaused then return end
 	
-	if GameMode == 'MainMenu' then
-	elseif GameMode == 'StartDelay' then
-		StartDelay = StartDelay - dt
-		if StartDelay <= 0 then
-			StartDelay = 0.5
+	if type(GameMode) == 'number' then
+		if GameMode <= 0 then
 			GameMode = 'Play'
+		else
+			GameMode = GameMode - dt
 		end
+	end
+	
+	if GameMode == 'MainMenu' then
 	elseif GameMode == 'Play' then
-		
-		--[[
-				TODO:
-				Maybe if GameMode == number then countdown before continue to play or something
-		]]--
 		GameMode = game:Play(dt)
 
 		Player.Sprite = PlayerSpriteNeutral
@@ -141,8 +136,16 @@ function love.update(dt)
 		Player.shootpoint = Player.x + (Player.Sprite[1]:getWidth()/2)
 
 		-- Check Collisions
-		if #(Player.Bullets) > 0 and game.enemies then
+		if game.enemies then
 			for index, enemy in ipairs(game.enemies) do
+				if #enemy.bullets > 0 then
+					for _, bullet in ipairs(enemy.bullets) do
+						if Player.hitbox:checkCollision(bullet) then
+							GameMode = 'GameOver'
+						end
+					end
+				end
+				if not (#(Player.Bullets) > 0) then break end
 				for _, bullet in ipairs(Player.Bullets) do
 					if #(game.enemies) <= 0 then
 						break
@@ -191,7 +194,7 @@ function love.draw()
 		love.graphics.setColor(115, 30, 30)
 		love.graphics.printf("WINNER", 0, 200, love.graphics.getWidth(), 'center')
 		love.graphics.pop()
-	elseif GameMode == 'Play' or GameMode == 'StartDelay' then
+	elseif GameMode == 'Play' or type(GameMode) == 'number' then
 	-- Draw all the sprites, bullets and hitboxes
 		love.graphics.printf(love.timer.getFPS(), -10, 10, love.graphics.getWidth(), 'right')
 		love.graphics.printf('SCORE :  ' .. __SCORE, 5, 10, love.graphics.getWidth(), 'left')
@@ -228,7 +231,7 @@ function love.keypressed(key)
 			if not (MainMenu.selected == #(MainMenu.items)) then MainMenu.selected = MainMenu.selected + 1 end
 		elseif key == 'space' then
 			if MainMenu.selected == 1 then
-				GameMode = 'StartDelay'
+				GameMode = 0.5
 			elseif MainMenu.selected == 2 then
 				love.event.quit()
 			end

@@ -32,7 +32,7 @@ function Enemy.new(enemytype, x, y, radius, points, bulletPattern)
 	local enemytype = enemytype or 1
 	local pattern = MovementPatterns[enemytype]
 	local points = points or 10
-	local bulletPattern = bulletPattern or {typ = 'direction', direction = 180, numofbullets = 1, frequency = 1}
+	local bulletPattern = bulletPattern or {typ = 'circle', numofbullets = 8, shot = {frequency = 1}, size = 3}
 	-- Body is the hitbox, still need proper sprites (see TODO below)
 	local body = Circle(x, y, radius)
 	
@@ -40,6 +40,8 @@ function Enemy.new(enemytype, x, y, radius, points, bulletPattern)
 		enemytype = enemytype,
 		pattern = pattern,
 		bulletPattern = bulletPattern,
+		bulletDelay = 0,
+		bullets = {},
 		body = body,
 		patstep = 0,
 		xmov = nil,
@@ -60,6 +62,9 @@ setmetatable(Enemy, {__call = function(_, ...) return Enemy.new(...) end})
 
 function Enemy:draw()
 	self.body:draw()
+	for _, bullet in ipairs(self.bullets) do
+		bullet:draw()
+	end
 end
 
 function Enemy:checkCollision(circle)
@@ -67,6 +72,10 @@ function Enemy:checkCollision(circle)
 end
 
 function EnemyMoveHelper(enemy)
+	if enemy.patstep == -1 then
+		return
+	end
+
 	local condition = enemy.pattern[enemy.patstep].xcondition
 	
 	-- xmov
@@ -115,7 +124,7 @@ end
 
 function Enemy:move(dt)
 	-- end of pattern
-	if self.patstel == -1 then
+	if self.patstep == -1 then
 		return
 	end
 	-- beginning of pattern
@@ -142,5 +151,36 @@ function Enemy:move(dt)
 end
 
 function Enemy:shoot(dt)
+	local bulletType = self.bulletPattern.typ
+	local numBullets = self.bulletPattern.numofbullets
+	local direction = self.bulletPattern.direction
 
+	if (not self.bulletPattern.shot.move) and not (self.patstep == -1) then return end
+	self.bulletDelay = self.bulletDelay + dt
+	
+	if (math.floor(self.bulletDelay + 0.5)) == (1 / self.bulletPattern.shot.frequency) then
+		for i = 1, numBullets, 1 do
+			table.insert(self.bullets, Circle(self.body.x, self.body.y, self.bulletPattern.size, 0, 255, 50))
+		end
+		self.bulletDelay = 0
+	end
+	
+	for index, bullet in ipairs(self.bullets) do
+		local curbullet = (index - 1) % numBullets
+		if bulletType == 'direction' then
+			local angle = (curbullet * (90 / (numBullets - 1))) - 135
+			local xmovement = math.cos(math.rad(direction + angle))
+			local ymovement = math.sin(math.rad(direction + angle))
+			
+			bullet.x = bullet.x + (dt * 100 * xmovement)
+			bullet.y = bullet.y + (dt * 100 * ymovement)
+		elseif bulletType == 'circle' then			
+			local angle = curbullet * (360 / (numBullets - 1))
+			local xmovement = math.cos(math.rad(angle))
+			local ymovement = math.sin(math.rad(angle))
+
+			bullet.x = bullet.x + (dt * 100 * xmovement)
+			bullet.y = bullet.y + (dt * 100 * ymovement)
+		end
+	end
 end
