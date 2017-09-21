@@ -21,7 +21,7 @@ require 'enemy'
 	}
 ]]--
 
--- Enemy(type, x, y, radius)
+-- Enemy(type, x, y, radius, points)
 
 Levels = 
 {

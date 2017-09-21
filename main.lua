@@ -3,6 +3,7 @@ require 'game'
 
 -- We have our game modes and game states
 game = Game()
+__SCORE = 0
 
 gameIsPaused = false
 gameOver = false
@@ -147,10 +148,7 @@ function love.update(dt)
 						break
 					end
 					if (enemy:checkCollision(bullet)) then
-						--[[
-								TODO:
-								Add a scoring system
-						]]--
+						__SCORE = __SCORE + enemy.points						
 						game:enemyHit(index)
 						break
 					end
@@ -195,7 +193,8 @@ function love.draw()
 		love.graphics.pop()
 	elseif GameMode == 'Play' or GameMode == 'StartDelay' then
 	-- Draw all the sprites, bullets and hitboxes
-		love.graphics.printf(love.timer.getFPS(), 10, 10, love.graphics.getWidth(), 'left')
+		love.graphics.printf(love.timer.getFPS(), -10, 10, love.graphics.getWidth(), 'right')
+		love.graphics.printf('SCORE :  ' .. __SCORE, 5, 10, love.graphics.getWidth(), 'left')
 		love.graphics.draw(Player.Sprite[math.floor(Player.currentframe + 0.5)], Player.x, Player.y)
 		
 		if hitboxvisible then Player.hitbox:draw() end
@@ -218,6 +217,10 @@ end
 
 -- love.keypressed is called when a key is pressed likewise with keyreleased
 function love.keypressed(key)
+	if key == 'escape' then
+		love.event.quit()
+	end
+
 	if GameMode == 'MainMenu' then
 		if key == 'w' then
 			if not (MainMenu.selected == 1) then MainMenu.selected = MainMenu.selected - 1 end
