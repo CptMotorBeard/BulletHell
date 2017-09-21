@@ -20,9 +20,6 @@ setmetatable(Game, {__call = function(_, ...) return Game.new(...) end})
 		To spawn enemies we look at the Levels table
 		For each level, we spawn in the enemies for each round. When they are all removed, we move to the next level
 		If all enemies on the last level are removed, we move on to the win screen
-		
-		TODO:
-		Put a delay between levels
 ]]--
 
 function Game:Play(dt)

@@ -6,28 +6,6 @@ __UNITS = 64
 Enemy = {}
 Enemy.__index = Enemy
 
---[[
-	Bullet pattern types --
-		Directional --
-			Aimed --
-				number of bullets
-			direction
-			number of bullets
-		Circle --
-			number of bullets
-			Circle [move] --
-				direction
-		Line --
-			number of bullets
-			direction
-		Sweep --
-			number of bullets
-			direction
-			sweep direction
-	Duplicate all of these with tracking bullets
-	Tracking bullets do a burst and than aim towards the player
-]]--
-
 function Enemy.new(enemytype, x, y, radius, points, bulletPattern)
 	local enemytype = enemytype or 1
 	local pattern = MovementPatterns[enemytype]
@@ -181,6 +159,13 @@ function Enemy:shoot(dt)
 
 			bullet.x = bullet.x + (dt * 100 * xmovement)
 			bullet.y = bullet.y + (dt * 100 * ymovement)
+		end
+		
+		if 	bullet.x < (0 - self.bulletPattern.size) or
+			bullet.x > (love.graphics.getWidth() + self.bulletPattern.size) or
+			bullet.y < (0 - self.bulletPattern.size) or
+			bullet.y > (love.graphics.getHeight() + self.bulletPattern.size) then
+			table.remove(self.bullets, index)
 		end
 	end
 end

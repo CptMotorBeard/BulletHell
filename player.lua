@@ -50,7 +50,7 @@ end
 
 setmetatable(Player, {__call = function(_, ...) return Player.new(...) end})
 
-function Player:shoot(dt)
+function Player:shoot()
 	if love.keyboard.isDown('space') then
 		if not self.shooting then
 			table.insert(self.Bullets, Circle(self.shootpoint, self.y, 3))
@@ -59,6 +59,9 @@ function Player:shoot(dt)
 			self.shooting = false
 		end
 	end
+end
+
+function Player:updateBullets(dt)
 	-- Update player bullets
 	for index, bullet in ipairs(self.Bullets) do
 		bullet.y = bullet.y - (300 * dt)

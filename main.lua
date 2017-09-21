@@ -26,40 +26,19 @@ end
 function love.update(dt)
 	if gameIsPaused or GameMode == 'MainMenu' then return end
 	
-	Player:shoot(dt)
+	Player:updateBullets(dt)
 	Player:move(dt)
+	
 	if type(GameMode) == 'number' then
-	if GameMode <= 0 then
-		GameMode = 'Play'
-	else
-		GameMode = GameMode - dt
-	end
+		if GameMode <= 0 then
+			GameMode = 'Play'
+		else
+			GameMode = GameMode - dt
+		end
 	elseif GameMode == 'Play' then
 		GameMode = game:Play(dt)
-
-		-- Check Collisions
-		if game.enemies then
-			for index, enemy in ipairs(game.enemies) do
-				if #enemy.bullets > 0 then
-					for _, bullet in ipairs(enemy.bullets) do
-						if Player.hitbox:checkCollision(bullet) then
-							GameMode = 'GameOver'
-						end
-					end
-				end
-				if not (#(Player.Bullets) > 0) then break end
-				for _, bullet in ipairs(Player.Bullets) do
-					if #(game.enemies) <= 0 then
-						break
-					end
-					if (enemy:checkCollision(bullet)) then
-						__SCORE = __SCORE + enemy.points						
-						game:enemyHit(index)
-						break
-					end
-				end
-			end
-		end
+		Player:shoot()
+		collisions()
 	end
 end
 
@@ -160,4 +139,30 @@ function love.focus(f) gameIsPaused = not f end
 
 -- love.quit is called when the user clicks the close button
 function love.quit()
+end
+
+function collisions()
+	-- Check Collisions
+	if game.enemies then
+		for index, enemy in ipairs(game.enemies) do
+			if #enemy.bullets > 0 then
+				for _, bullet in ipairs(enemy.bullets) do
+					if Player.hitbox:checkCollision(bullet) then
+						GameMode = 'GameOver'
+					end
+				end
+			end
+			if not (#(Player.Bullets) > 0) then break end
+			for _, bullet in ipairs(Player.Bullets) do
+				if #(game.enemies) <= 0 then
+					break
+				end
+				if (enemy:checkCollision(bullet)) then
+					__SCORE = __SCORE + enemy.points						
+					game:enemyHit(index)
+					break
+				end
+			end
+		end
+	end
 end
