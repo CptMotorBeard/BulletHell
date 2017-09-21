@@ -42,15 +42,6 @@ function Enemy:checkCollision(circle)
 	return self.body:checkCollision(circle)
 end
 
---[[
-		TODO:
-		Enemy:move(dt)
-		
-		Based on the pattern outline in patterns.lua, implement the proper states and state swaps to get working patterns
-		When we move to a new pattern, or at the start of a pattern, need to set a maxx and maxy to determine where we are moving to
-		so that relative movement works properly
-]]--
-
 function EnemyMoveHelper(enemy)
 	local condition = enemy.pattern[enemy.patstep].xcondition
 	
