@@ -2,10 +2,6 @@ require 'objects'
 require 'game'
 require 'player'
 
--- We have our game modes and game states
-game = Game()
-__SCORE = 0
-
 gameIsPaused = false
 gameOver = false
 hitboxvisible = false
@@ -13,13 +9,15 @@ hitboxvisible = false
 MainMenu = {items = {'Start', 'Exit'}, selected = 1}
 GameMode = 'MainMenu'
 
-Player = Player()
-
 -- Variable to slow down the bullets
 SpriteSpeed = 6
 
 -- love.load is called once at the beginning
 function love.load(arg)
+	-- We have our game modes and game states
+	game = Game()
+	Player = Player()
+	__SCORE = 0
 end
 
 -- dt is delta time, time since function last called. love.update is called every update. math goes here
@@ -28,6 +26,7 @@ function love.update(dt)
 	
 	Player:updateBullets(dt)
 	Player:move(dt)
+	game:updateBullets(dt)
 	
 	if type(GameMode) == 'number' then
 		if GameMode <= 0 then
@@ -79,9 +78,11 @@ function love.draw()
 				enemy:draw()
 			end
 		end
-	
-		for _, bullet in ipairs(game.bullets) do
-			bullet:draw()
+		
+		for _, enemy in ipairs(game.bullets) do
+			for _, bullet in ipairs(enemy.bullets) do
+				bullet:draw()
+			end
 		end
 	else
 		-- Simple gameover / win screen
@@ -142,16 +143,18 @@ function love.quit()
 end
 
 function collisions()
-	-- Check Collisions
-	if game.enemies then
-		for index, enemy in ipairs(game.enemies) do
-			if #enemy.bullets > 0 then
-				for _, bullet in ipairs(enemy.bullets) do
-					if Player.hitbox:checkCollision(bullet) then
-						GameMode = 'GameOver'
-					end
+	if #game.bullets > 0 then
+		for _, enemy in ipairs(game.bullets) do
+			for _, bullet in ipairs(enemy.bullets) do
+				if Player.hitbox:checkCollision(bullet) then
+					GameMode = 'GameOver'
 				end
 			end
+		end
+	end
+	
+	if game.enemies then
+		for index, enemy in ipairs(game.enemies) do		
 			if not (#(Player.Bullets) > 0) then break end
 			for _, bullet in ipairs(Player.Bullets) do
 				if #(game.enemies) <= 0 then

@@ -3,6 +3,8 @@ require 'objects'
 
 __UNITS = 64
 
+Bullets = {}
+
 Enemy = {}
 Enemy.__index = Enemy
 
@@ -10,7 +12,7 @@ function Enemy.new(enemytype, x, y, radius, points, bulletPattern)
 	local enemytype = enemytype or 1
 	local pattern = MovementPatterns[enemytype]
 	local points = points or 10
-	local bulletPattern = bulletPattern or {typ = 'circle', numofbullets = 8, shot = {frequency = 1}, size = 3}
+	local bulletPattern = bulletPattern or {typ = 'circle', numofbullets = 8, shot = {frequency = 1, move=1}, size = 3}
 	-- Body is the hitbox, still need proper sprites (see TODO below)
 	local body = Circle(x, y, radius)
 	
@@ -19,7 +21,6 @@ function Enemy.new(enemytype, x, y, radius, points, bulletPattern)
 		pattern = pattern,
 		bulletPattern = bulletPattern,
 		bulletDelay = 0,
-		bullets = {},
 		body = body,
 		patstep = 0,
 		xmov = nil,
@@ -40,9 +41,6 @@ setmetatable(Enemy, {__call = function(_, ...) return Enemy.new(...) end})
 
 function Enemy:draw()
 	self.body:draw()
-	for _, bullet in ipairs(self.bullets) do
-		bullet:draw()
-	end
 end
 
 function Enemy:checkCollision(circle)
@@ -129,20 +127,29 @@ function Enemy:move(dt)
 end
 
 function Enemy:shoot(dt)
-	local bulletType = self.bulletPattern.typ
 	local numBullets = self.bulletPattern.numofbullets
-	local direction = self.bulletPattern.direction
-
+	local bullets = {}
+	
 	if (not self.bulletPattern.shot.move) and not (self.patstep == -1) then return end
 	self.bulletDelay = self.bulletDelay + dt
 	
 	if (math.floor(self.bulletDelay + 0.5)) == (1 / self.bulletPattern.shot.frequency) then
 		for i = 1, numBullets, 1 do
-			table.insert(self.bullets, Circle(self.body.x, self.body.y, self.bulletPattern.size, 0, 255, 50))
+			table.insert(bullets, Circle(self.body.x, self.body.y, self.bulletPattern.size, 0, 255, 50))
 		end
 		self.bulletDelay = 0
 	end
 	
+	if #bullets == 0 then return nil
+	else return {pattern = self.bulletPattern, bullets = bullets}
+	end
+end
+
+function Enemy:updateBullets(dt)
+	local bulletType = self.bulletPattern.typ
+	local numBullets = self.bulletPattern.numofbullets
+	local direction = self.bulletPattern.direction
+
 	for index, bullet in ipairs(self.bullets) do
 		local curbullet = (index - 1) % numBullets
 		if bulletType == 'direction' then
