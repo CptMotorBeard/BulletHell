@@ -24,7 +24,7 @@ end
 
 -- dt is delta time, time since function last called. love.update is called every update. math goes here
 function love.update(dt)
-	if gameIsPaused or GameMode == 'MainMenu' then return end
+	if gameIsPaused or GameMode == 'MainMenu' or GameMode == 'GameOver' then return end
 	
 	Player:updateBullets(dt)
 	Player:move(dt)
@@ -61,13 +61,6 @@ function love.draw()
 			end
 		end
 		love.graphics.pop()
-	elseif GameMode == 'Win' then
-		-- Simple victory screen
-		love.graphics.push('all')
-		love.graphics.setFont(love.graphics.newFont(72))
-		love.graphics.setColor(115, 30, 30)
-		love.graphics.printf("WINNER", 0, 200, love.graphics.getWidth(), 'center')
-		love.graphics.pop()
 	elseif GameMode == 'Play' or type(GameMode) == 'number' then
 	-- Draw all the sprites, bullets and hitboxes
 		love.graphics.printf(love.timer.getFPS(), -10, 10, love.graphics.getWidth(), 'right')
@@ -90,6 +83,13 @@ function love.draw()
 		for _, bullet in ipairs(game.bullets) do
 			bullet:draw()
 		end
+	else
+		-- Simple gameover / win screen
+		love.graphics.push('all')
+		love.graphics.setFont(love.graphics.newFont(72))
+		love.graphics.setColor(115, 30, 30)
+		love.graphics.printf(GameMode, 0, 200, love.graphics.getWidth(), 'center')
+		love.graphics.pop()
 	end
 end
 
