@@ -43,7 +43,7 @@
 	Patterns end if nextstep = 0 or if the movement brings the enemy off screen (in which case they are despawned)
 ]]--
 
-Patterns =
+MovementPatterns =
 {
 	{
 		-- Step 1

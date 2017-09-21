@@ -8,7 +8,7 @@ Enemy.__index = Enemy
 
 function Enemy.new(enemytype, x, y, radius, points)
 	local enemytype = enemytype or 1
-	local pattern = Patterns[enemytype]
+	local pattern = MovementPatterns[enemytype]
 	local points = points or 10
 	-- Body is the hitbox, still need proper sprites (see TODO below)
 	local body = Circle(x, y, radius)
