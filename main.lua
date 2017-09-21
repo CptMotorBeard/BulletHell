@@ -13,12 +13,6 @@ hitboxvisible = false
 MainMenu = {items = {'Start', 'Exit'}, selected = 1}
 GameMode = 'MainMenu'
 
--- Than we have our character sprites
---[[
-		TODO:
-		Make a player class
-]]--
-
 Player = Player()
 
 -- Variable to slow down the bullets
@@ -30,22 +24,18 @@ end
 
 -- dt is delta time, time since function last called. love.update is called every update. math goes here
 function love.update(dt)
-	if gameIsPaused then return end
+	if gameIsPaused or GameMode == 'MainMenu' then return end
 	
+	Player:shoot(dt)
+	Player:move(dt)
 	if type(GameMode) == 'number' then
-		if GameMode <= 0 then
-			GameMode = 'Play'
-		else
-			GameMode = GameMode - dt
-		end
+	if GameMode <= 0 then
+		GameMode = 'Play'
+	else
+		GameMode = GameMode - dt
 	end
-	
-	if GameMode == 'MainMenu' then
 	elseif GameMode == 'Play' then
 		GameMode = game:Play(dt)
-		
-		Player:shoot(dt)
-		Player:move(dt)
 
 		-- Check Collisions
 		if game.enemies then
