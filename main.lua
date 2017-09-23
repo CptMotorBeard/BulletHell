@@ -35,7 +35,7 @@ function love.update(dt)
 			GameMode = GameMode - dt
 		end
 	elseif GameMode == 'Play' then
-		GameMode = game:Play(dt)
+		GameMode = game:Play(dt, Player)
 		Player:shoot()
 		collisions()
 	end
@@ -136,7 +136,7 @@ end
 
 -- love.focus tells the game if the screen is in focus
 -- pause game if not focused
-function love.focus(f) gameIsPaused = not f end
+--function love.focus(f) gameIsPaused = not f end
 
 -- love.quit is called when the user clicks the close button
 function love.quit()

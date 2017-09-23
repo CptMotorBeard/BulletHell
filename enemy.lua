@@ -137,14 +137,14 @@ function Enemy:move(dt)
 	self.body.y = self.body.y + (ydir * move)
 end
 
-function Enemy:shoot(dt)
+function Enemy:shoot(dt, player)
 	local numBullets = self.bulletPattern.numofbullets
 	local bullets = {}
 	
 	if (not self.bulletPattern.shot.move) and not (self.patstep == -1) then return end
 	self.bulletDelay = self.bulletDelay + dt
 	
-	if (math.floor(self.bulletDelay + 0.5)) == (1 / self.bulletPattern.shot.frequency) then
+	if self.bulletDelay >= (1 / self.bulletPattern.shot.frequency) then
 		for i = 1, numBullets, 1 do
 			local bullet = Circle(self.body.x, self.body.y, self.bulletPattern.size, 0, 255, 50)
 			bullet.index = i
@@ -153,9 +153,20 @@ function Enemy:shoot(dt)
 		self.bulletDelay = 0
 	end
 	
-	if #bullets == 0 then return nil
-	else return {pattern = self.bulletPattern, bullets = bullets}
+	if #bullets == 0 then return nil end
+	
+	local pattern = {}
+	
+	for i,j in pairs(self.bulletPattern) do
+		pattern[i] = j
 	end
+	
+	if pattern.direction and pattern.direction == 'aimed' then		
+		local deltax = player.x - self.body.x
+		local deltay = player.y - self.body.y
+		pattern.direction = 180 - math.deg(math.atan2(deltax, deltay))
+	end
+	return {pattern = pattern, bullets = bullets}
 end
 
 function Enemy:updateBullets(dt)

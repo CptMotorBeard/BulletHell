@@ -30,7 +30,7 @@
 	the information followed in the [] indicates how to fill out the rest of the data
 	----
 		'direction'
-			direction = direction in degrees
+			direction = direction in degrees OR 'aimed' to always aim at player
 			numofbullets is a positive integer
 		]
 		'circle' [
@@ -55,7 +55,13 @@ Levels =
 		Enemies =
 		{
 			{
-				Enemy(3, love.graphics.getWidth() / 2, -50, 10, 100, {typ='circle', numofbullets=12, shot={frequency=1}})
+				Enemy(1, 0, 50, 10, 10, {typ='direction', direction='180', numofbullets=36}),
+				Enemy(1, -50, 50, 10, 10, {typ='direction', direction='180', numofbullets=36}),
+				Enemy(1, -100, 50, 10, 10, {typ='direction', direction='180', numofbullets=36}),
+				Enemy(2, love.graphics.getWidth(), 50, 10, 10, {typ='direction', direction='180', numofbullets=36}),
+				Enemy(2, love.graphics.getWidth() + 50, 50, 10, 10, {typ='direction', direction='180', numofbullets=36}),
+				Enemy(2, love.graphics.getWidth() + 100, 50, 10, 10, {typ='direction', direction='180', numofbullets=36}),
+				Enemy(3, love.graphics.getWidth() / 2, -500, 10, 100, {typ='circle', numofbullets=108, shot={frequency=2}})
 			}
 		}
 	}

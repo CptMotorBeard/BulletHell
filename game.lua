@@ -22,7 +22,7 @@ setmetatable(Game, {__call = function(_, ...) return Game.new(...) end})
 		If all enemies on the last level are removed, we move on to the win screen
 ]]--
 
-function Game:Play(dt)
+function Game:Play(dt, player)
 	if (not self.enemies) or #self.enemies == 0 then
 		if self.level > #(Levels) then
 			return 'Win'
@@ -44,7 +44,7 @@ function Game:Play(dt)
 		for index, enemy in ipairs(self.enemies) do
 			if not enemy.dead then 
 				enemy:move(dt)
-				local bullet = enemy:shoot(dt)
+				local bullet = enemy:shoot(dt, player)
 				table.insert(self.bullets, bullet)
 			end
 			if 	enemy.patstep == -1 and 
@@ -70,7 +70,7 @@ function bulletHelper(dt, pattern, bullets)
 
 	for _, bullet in ipairs(bullets) do
 		local curbullet = (bullet.index - 1) % numBullets
-		if bulletType == 'direction' then
+		if bulletType == 'direction' and direction ~= 'aimed' then
 			local angle = (curbullet * (90 / (numBullets - 1))) - 135
 			local xmovement = math.cos(math.rad(direction + angle))
 			local ymovement = math.sin(math.rad(direction + angle))
