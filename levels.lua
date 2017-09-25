@@ -54,6 +54,7 @@ Levels =
 		numRounds = 1,
 		Enemies =
 		{
+			'Boss',
 			{
 				Enemy(1, 0, 50, 10, 10, {typ='direction', direction='180', numofbullets=36}),
 				Enemy(1, -50, 50, 10, 10, {typ='direction', direction='180', numofbullets=36}),

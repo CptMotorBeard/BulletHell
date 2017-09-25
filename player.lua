@@ -36,6 +36,9 @@ PlayerSpriteLeft = {
 	Spaceship[8]
 }
 
+BulletDelay = 0.02
+CurDelay = BulletDelay
+
 function Player.new(x, y, speed)
 	return setmetatable({
 		x = x or 250,
@@ -52,13 +55,17 @@ end
 
 setmetatable(Player, {__call = function(_, ...) return Player.new(...) end})
 
-function Player:shoot()
+function Player:shoot(dt)
 	if love.keyboard.isDown('space') then
 		if not self.shooting then
 			table.insert(self.Bullets, Circle(self.shootpoint, self.y, 3))
 			self.shooting = true
 		else
-			self.shooting = false
+			CurDelay = CurDelay - dt
+			if CurDelay <= 0 then
+				self.shooting = false
+				CurDelay = BulletDelay
+			end
 		end
 	end
 end
@@ -106,8 +113,8 @@ function Player:move(dt)
 	self.shootpoint = self.x + (self.Sprite[1]:getWidth()/2)
 	
 	-- update frames for player sprite
-	if ((self.currentframe + (SpriteSpeed * dt)) < 4.5) then
-		self.currentframe = self.currentframe + (SpriteSpeed * dt)
+	if ((self.currentframe + (5 * dt)) < 4.5) then
+		self.currentframe = self.currentframe + (5 * dt)
 	else
 		self.currentframe = 0.5
 	end

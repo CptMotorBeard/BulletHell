@@ -24,9 +24,6 @@ setmetatable(Game, {__call = function(_, ...) return Game.new(...) end})
 
 function Game:Play(dt, player)
 	if (not self.enemies) or #self.enemies == 0 then
-		if self.level > #(Levels) then
-			return 'Win'
-		end
 		local curLevel = Levels[self.level]
 		if self.curSection > curLevel.numRounds then
 			local delay = Levels[self.level].delay or 0.5
@@ -40,6 +37,11 @@ function Game:Play(dt, player)
 		end
 		self.curSection = self.curSection + 1
 		self.enemies = curLevel.Enemies[self.curSection]
+		if self.enemies == 'Boss' then
+			self.curSection = self.curSection + 1
+			self.enemies = curLevel.Enemies[self.curSection]
+			return 'Boss'
+		end
 	else
 		for index, enemy in ipairs(self.enemies) do
 			if not enemy.dead then 

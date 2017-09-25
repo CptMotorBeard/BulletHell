@@ -1,16 +1,18 @@
 require 'objects'
 require 'game'
 require 'player'
+require 'boss'
+require 'levelsBoss'
 
 gameIsPaused = false
 gameOver = false
 hitboxvisible = false
 
+currentBoss = 1
+b = levelsBoss[currentBoss]
+
 MainMenu = {items = {'Start', 'Exit'}, selected = 1}
 GameMode = 'MainMenu'
-
--- Variable to slow down the bullets
-SpriteSpeed = 6
 
 -- love.load is called once at the beginning
 function love.load(arg)
@@ -36,13 +38,20 @@ function love.update(dt)
 		end
 	elseif GameMode == 'Play' then
 		GameMode = game:Play(dt, Player)
-		Player:shoot()
-		collisions()
+		Player:shoot(dt)
+		collisions()		
+	elseif GameMode == 'Boss' then
+		Player:shoot(dt)
+		bosscollisions()
 	end
 end
 
 -- love.draw is called every update. graphics go here
 function love.draw()
+	if GameMode == 'Boss' then
+		-- Boss health bar (debugging only maybe)
+		b:draw()
+	end
 	if GameMode == 'MainMenu' then
 		love.graphics.push('all')
 		love.graphics.setFont(love.graphics.newFont(72))
@@ -60,7 +69,7 @@ function love.draw()
 			end
 		end
 		love.graphics.pop()
-	elseif GameMode == 'Play' or type(GameMode) == 'number' then
+	elseif GameMode == 'Play' or type(GameMode) == 'number' or GameMode == 'Boss' then
 	-- Draw all the sprites, bullets and hitboxes
 		love.graphics.printf(love.timer.getFPS(), -10, 10, love.graphics.getWidth(), 'right')
 		love.graphics.printf('SCORE :  ' .. __SCORE, 5, 10, love.graphics.getWidth(), 'left')
@@ -73,7 +82,7 @@ function love.draw()
 			bullet:draw()
 		end
 		
-		if game.enemies then
+		if game.enemies and not (GameMode == 'Boss') and not (game.enemies == 'Boss') then
 			for _, enemy in ipairs(game.enemies) do
 				enemy:draw()
 			end
@@ -114,7 +123,7 @@ function love.keypressed(key)
 		end
 		
 	-- Toggle for speed and showing player hitbox
-	elseif GameMode == 'Play' then
+	elseif GameMode == 'Play' or GameMode == 'Boss'	then
 		if key == 'lshift' then
 			hitboxvisible = true
 			Player.speed = 125
@@ -126,7 +135,7 @@ function love.keyreleased(key)
 	if GameMode == 'MainMenu' then
 	
 	-- Toggle for speed and showing player hitbox
-	elseif GameMode == 'Play' then
+	elseif GameMode == 'Play' or GameMode == 'Boss' then
 		if key == 'lshift' then
 			hitboxvisible = false
 			Player.speed = 250
@@ -153,7 +162,7 @@ function collisions()
 		end
 	end
 	
-	if game.enemies then
+	if game.enemies and not (game.enemies == 'Boss') then
 		for index, enemy in ipairs(game.enemies) do		
 			if not (#(Player.Bullets) > 0) then break end
 			for pindex, bullet in ipairs(Player.Bullets) do
@@ -167,6 +176,16 @@ function collisions()
 					break
 				end
 			end
+		end
+	end
+end
+
+function bosscollisions()
+	for index, bullet in ipairs(Player.Bullets) do
+		if (b:checkCollision(bullet)) then
+			Player:removeBullet(index)
+			GameMode = b:hit()
+			if not (GameMode == 'Boss') then __SCORE = __SCORE + b.points end
 		end
 	end
 end
