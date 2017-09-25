@@ -156,12 +156,13 @@ function collisions()
 	if game.enemies then
 		for index, enemy in ipairs(game.enemies) do		
 			if not (#(Player.Bullets) > 0) then break end
-			for _, bullet in ipairs(Player.Bullets) do
+			for pindex, bullet in ipairs(Player.Bullets) do
 				if #(game.enemies) <= 0 then
 					break
 				end
 				if (enemy:checkCollision(bullet)) then
 					__SCORE = __SCORE + enemy.points						
+					Player:removeBullet(pindex)
 					game:enemyHit(index)
 					break
 				end

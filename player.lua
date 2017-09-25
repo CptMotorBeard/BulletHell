@@ -1,3 +1,5 @@
+require 'objects'
+
 Player = {}
 Player.__index = Player
 
@@ -113,4 +115,8 @@ end
 
 function Player:draw()
 	love.graphics.draw(Player.Sprite[math.floor(Player.currentframe + 0.5)], Player.x, Player.y)
+end
+
+function Player:removeBullet(index)
+	table.remove(self.Bullets, index)
 end
