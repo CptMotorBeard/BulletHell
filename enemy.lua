@@ -9,7 +9,7 @@ Enemy = {}
 Enemy.__index = Enemy
 
 function Enemy.new(enemytype, x, y, radius, points, bulletPattern)
-	local enemytype = enemytype or 1
+	local enemytype = enemytype
 	local pattern = MovementPatterns[enemytype]
 	local points = points or 10
 	local bulletsPattern = {typ = bulletPattern.typ or 'circle',
@@ -103,6 +103,7 @@ function EnemyMoveHelper(enemy)
 end
 
 function Enemy:move(dt)
+	if not self.pattern then return end
 	-- end of pattern
 	if self.patstep == -1 then
 		return
