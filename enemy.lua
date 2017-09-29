@@ -169,35 +169,3 @@ function Enemy:shoot(dt, player)
 	end
 	return {pattern = pattern, bullets = bullets}
 end
-
-function Enemy:updateBullets(dt)
-	local bulletType = self.bulletPattern.typ
-	local numBullets = self.bulletPattern.numofbullets
-	local direction = self.bulletPattern.direction
-
-	for index, bullet in ipairs(self.bullets) do
-		local curbullet = (index - 1) % numBullets
-		if bulletType == 'direction' then
-			local angle = (curbullet * (90 / (numBullets - 1))) - 135
-			local xmovement = math.cos(math.rad(direction + angle))
-			local ymovement = math.sin(math.rad(direction + angle))
-			
-			bullet.x = bullet.x + (dt * 100 * xmovement)
-			bullet.y = bullet.y + (dt * 100 * ymovement)
-		elseif bulletType == 'circle' then			
-			local angle = curbullet * (360 / (numBullets - 1))
-			local xmovement = math.cos(math.rad(angle))
-			local ymovement = math.sin(math.rad(angle))
-
-			bullet.x = bullet.x + (dt * 100 * xmovement)
-			bullet.y = bullet.y + (dt * 100 * ymovement)
-		end
-		
-		if 	bullet.x < (0 - self.bulletPattern.size) or
-			bullet.x > (love.graphics.getWidth() + self.bulletPattern.size) or
-			bullet.y < (0 - self.bulletPattern.size) or
-			bullet.y > (love.graphics.getHeight() + self.bulletPattern.size) then
-			table.remove(self.bullets, index)
-		end
-	end
-end

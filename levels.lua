@@ -56,12 +56,12 @@ Levels =
 		{
 			'Boss',
 			{
-				Enemy(1, 0, 50, 10, 10, {typ='direction', direction='180', numofbullets=36}),
-				Enemy(1, -50, 50, 10, 10, {typ='direction', direction='180', numofbullets=36}),
-				Enemy(1, -100, 50, 10, 10, {typ='direction', direction='180', numofbullets=36}),
-				Enemy(2, love.graphics.getWidth(), 50, 10, 10, {typ='direction', direction='180', numofbullets=36}),
-				Enemy(2, love.graphics.getWidth() + 50, 50, 10, 10, {typ='direction', direction='180', numofbullets=36}),
-				Enemy(2, love.graphics.getWidth() + 100, 50, 10, 10, {typ='direction', direction='180', numofbullets=36}),
+				Enemy(1, 0, 50, 10, 10, {typ='direction', direction=180, numofbullets=36}),
+				Enemy(1, -50, 50, 10, 10, {typ='direction', direction=180, numofbullets=36}),
+				Enemy(1, -100, 50, 10, 10, {typ='direction', direction=180, numofbullets=36}),
+				Enemy(2, love.graphics.getWidth(), 50, 10, 10, {typ='direction', direction=180, numofbullets=36}),
+				Enemy(2, love.graphics.getWidth() + 50, 50, 10, 10, {typ='direction', direction=180, numofbullets=36}),
+				Enemy(2, love.graphics.getWidth() + 100, 50, 10, 10, {typ='direction', direction=180, numofbullets=36}),
 				Enemy(3, love.graphics.getWidth() / 2, -500, 10, 100, {typ='circle', numofbullets=108, shot={frequency=2}})
 			}
 		}

@@ -2,14 +2,14 @@ require 'objects'
 require 'game'
 require 'player'
 require 'boss'
-require 'levelsBoss'
+require 'boss'
 
 gameIsPaused = false
 gameOver = false
 hitboxvisible = false
 
 currentBoss = 1
-b = levelsBoss[currentBoss]
+boss = Boss(currentBoss)
 
 MainMenu = {items = {'Start', 'Exit'}, selected = 1}
 GameMode = 'MainMenu'
@@ -41,17 +41,15 @@ function love.update(dt)
 		Player:shoot(dt)
 		collisions()		
 	elseif GameMode == 'Boss' then
+		boss:updateBullets(dt)
 		Player:shoot(dt)
+		boss:shoot(dt, Player)
 		bosscollisions()
 	end
 end
 
 -- love.draw is called every update. graphics go here
 function love.draw()
-	if GameMode == 'Boss' then
-		-- Boss health bar (debugging only maybe)
-		b:draw()
-	end
 	if GameMode == 'MainMenu' then
 		love.graphics.push('all')
 		love.graphics.setFont(love.graphics.newFont(72))
@@ -74,6 +72,10 @@ function love.draw()
 		love.graphics.printf(love.timer.getFPS(), -10, 10, love.graphics.getWidth(), 'right')
 		love.graphics.printf('SCORE :  ' .. __SCORE, 5, 10, love.graphics.getWidth(), 'left')
 		
+		if GameMode == 'Boss' then
+			boss:healthbar()
+		end
+		
 		Player:draw()
 		
 		if hitboxvisible then Player.hitbox:draw() end
@@ -92,6 +94,10 @@ function love.draw()
 			for _, bullet in ipairs(enemy.bullets) do
 				bullet:draw()
 			end
+		end
+				
+		if GameMode == 'Boss' then
+			boss:draw()
 		end
 	else
 		-- Simple gameover / win screen
@@ -182,10 +188,18 @@ end
 
 function bosscollisions()
 	for index, bullet in ipairs(Player.Bullets) do
-		if (b:checkCollision(bullet)) then
+		if (boss:checkCollision(bullet)) then
 			Player:removeBullet(index)
-			GameMode = b:hit()
-			if not (GameMode == 'Boss') then __SCORE = __SCORE + b.points end
+			local t = boss:hit()
+			GameMode = t[1]
+			if not (GameMode == 'Boss') then __SCORE = __SCORE + t[2] end
+		end
+	end
+	for _, sectionbullet in ipairs(boss.Bullets) do
+		for _, bullet in ipairs(sectionbullet) do
+			if Player.hitbox:checkCollision(bullet) then
+				GameMode = 'GameOver'
+			end
 		end
 	end
 end
