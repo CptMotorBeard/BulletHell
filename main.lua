@@ -105,6 +105,7 @@ function love.draw()
 		love.graphics.setFont(love.graphics.newFont(72))
 		love.graphics.setColor(115, 30, 30)
 		love.graphics.printf(GameMode, 0, 200, love.graphics.getWidth(), 'center')
+		love.graphics.printf("Score: " .. __SCORE, 0, 300, love.graphics.getWidth(), 'center')
 		love.graphics.pop()
 	end
 end
